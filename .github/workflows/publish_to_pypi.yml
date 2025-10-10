@@ -151,7 +151,11 @@ jobs:
       - name: Generate CycloneDX SBOM
         run: |
           set -euo pipefail
-          cyclonedx-py poetry --format json --output sbom.json
+          cyclonedx-py poetry > sbom.json
+          if [[ ! -s sbom.json ]]; then
+            echo "Generated SBOM is empty" >&2
+            exit 1
+          fi
       - name: Scan SBOM for vulnerabilities using Trivy
         uses: aquasecurity/trivy-action@0.28.0
         with:
@@ -166,7 +170,7 @@ jobs:
           set -euo pipefail
           curl -X POST \
             -H "X-Api-Key: ${{ secrets.OWASP_TOKEN }}" \
-            -F "project=7c40c8ea-ea0f-4a5f-9b9f-368e53232397" \
+            -F "project=576d4400-bc73-4dcb-93bc-313cf2652595" \
             -F "bom=@sbom.json" \
             https://owasp-dt-api.prod.ripplex.io/api/v1/bom
       - name: Upload SBOM artifact
@@ -175,7 +179,12 @@ jobs:
           name: sbom
           path: sbom.json
       - name: Print scan report
-        run: cat vuln-report.txt
+        run: |
+          set -euo pipefail
+          cat vuln-report.txt
+          if ! grep -qE "CRITICAL|HIGH" vuln-report.txt; then
+            echo "✅ No CRITICAL or HIGH vulnerabilities detected for xrpl-py." 
+          fi
       - name: Upload vulnerability report artifact
         id: upload_vuln
         uses: actions/upload-artifact@v4
