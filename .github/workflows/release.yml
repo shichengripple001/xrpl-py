@@ -481,7 +481,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: >-
           gh release create
-          '${{ github.ref_name }}'
+          '${{ env.PACKAGE_VERSION }}'
           --repo '${{ github.repository }}'
           --generate-notes ||
           (echo "::error::Failed to create release" && exit 1)
@@ -493,7 +493,7 @@ jobs:
           # sigstore-produced signatures and certificates.
         run: >-
           gh release upload
-          '${{ github.ref_name }}'
+          '${{ env.PACKAGE_VERSION }}'
           dist/**
           provenance/**
           --repo '${{ github.repository }}'
@@ -519,7 +519,7 @@ jobs:
           curl -sS -X POST https://slack.com/api/chat.postMessage \
             -H "Authorization: Bearer $SLACK_TOKEN" \
             -H "Content-Type: application/json; charset=utf-8" \
-            -d "$(jq -n --arg channel "#xrpl-js" --arg text "$text" '{channel:$channel, text:$text}')"
+            -d "$(jq -n --arg channel "#test-alert" --arg text "$text" '{channel:$channel, text:$text}')"
 
       - name: Notify Slack if tests fail
         if: failure()
@@ -531,6 +531,6 @@ jobs:
             -H "Authorization: Bearer $SLACK_TOKEN" \
             -H "Content-Type: application/json" \
             -d "$(jq -n \
-                  --arg channel "#xrpl-js" \
+                  --arg channel "#test-alert" \
                   --arg text "$MESSAGE" \
                   '{channel: $channel, text: $text}')"
