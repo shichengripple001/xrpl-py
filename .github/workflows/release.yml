@@ -91,21 +91,21 @@ jobs:
           fi
 
   faucet-tests:
-    name: Run faucet tests matrix
+    name: Run faucet tests matrix (${{ needs.input-validate.outputs.package_version }})
     needs:
       - input-validate
     uses: ./.github/workflows/faucet_test.yml
     secrets: inherit
 
   integration-tests:
-    name: Run integration tests matrix
+    name: Run integration tests matrix (${{ needs.input-validate.outputs.package_version }})
     needs:
       - input-validate
     uses: ./.github/workflows/integration_test.yml
     secrets: inherit
 
   pre-release:
-    name: Pre-release distribution 📦
+    name: Pre-release distribution 📦 (${{ needs.input-validate.outputs.package_version }})
     needs:
       - input-validate
       - faucet-tests
@@ -410,7 +410,7 @@ jobs:
 
   publish-to-pypi:
     name: >-
-      Publish Python 🐍 distribution 📦 to PyPI
+      Publish Python 🐍 distribution 📦 to PyPI (${{ needs.pre-release.outputs.package_version }})
     needs:
       - pre-release
       - ask_for_dev_team_review
@@ -427,6 +427,12 @@ jobs:
       # More information about Trusted Publishing and OpenID Connect: https://blog.pypi.org/posts/2023-04-20-introducing-trusted-publishers/
       id-token: write # IMPORTANT: mandatory for trusted publishing
     steps:
+      - name: Prevent second attempt
+        run: |
+          if (( ${GITHUB_RUN_ATTEMPT:-1} > 1 )); then
+            echo "❌ Workflow rerun (attempt ${GITHUB_RUN_ATTEMPT}). Second attempts are not allowed."
+            exit 1
+          fi
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
@@ -443,8 +449,9 @@ jobs:
           attestations: true
 
   github-release:
-    name: Github Release
+    name: Github Release (${{ needs.pre-release.outputs.package_version }})
     needs:
+      - input-validate
       - pre-release
       - ask_for_dev_team_review
       - first_review
@@ -458,6 +465,7 @@ jobs:
       id-token: write # IMPORTANT: mandatory for sigstore
     env:
       PACKAGE_VERSION: ${{ needs.pre-release.outputs.package_version }}
+      IS_BETA_RELEASE: ${{ needs.input-validate.outputs.is_beta_release }}
 
     steps:
       - name: Download all the dists
@@ -479,12 +487,22 @@ jobs:
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: >-
-          gh release create
-          '${{ env.PACKAGE_VERSION }}'
-          --repo '${{ github.repository }}'
-          --generate-notes ||
-          (echo "::error::Failed to create release" && exit 1)
+        run: |
+          set -euo pipefail
+          ARGS=(
+            "$PACKAGE_VERSION"
+            --repo "$GITHUB_REPOSITORY"
+            --generate-notes
+          )
+          if [ "${IS_BETA_RELEASE:-false}" = "true" ]; then
+            ARGS+=(--prerelease --latest false)
+          else
+            ARGS+=(--latest true)
+          fi
+          gh release create "${ARGS[@]}" || {
+              echo "::error::Failed to create release"
+              exit 1
+            }
       - name: Upload artifact signatures to GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
