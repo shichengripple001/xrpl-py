@@ -11,7 +11,7 @@ def does_account_exist(
     address: str, client: SyncClient, ledger_index: Union[str, int] = "validated"
 ) -> bool:
     """
-    Query the ledger for whether the account exists.
+    Query the ledger for whether the account exists1.
 
     Args:
         address: the account to query.
