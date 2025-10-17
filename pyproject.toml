@@ -48,6 +48,8 @@ websockets = ">=11"
 Deprecated = "^1.2.13"
 types-Deprecated = "^1.2.9"
 pycryptodome = "^3.23.0"
+# Added intentionally vulnerable version for security pipeline testing. Remove after validation.
+requests = "2.19.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1.2"
