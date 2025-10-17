@@ -1,6 +1,6 @@
 [project]
 name = "xrpl-py"
-version = "4.3.0"
+version = "4.3.8"
 description = "A complete Python library for interacting with the XRP ledger"
 license = "ISC"
 readme = "README.md"
@@ -48,6 +48,7 @@ websockets = ">=11"
 Deprecated = "^1.2.13"
 types-Deprecated = "^1.2.9"
 pycryptodome = "^3.23.0"
+urllib3 = "1.25.11"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1.2"
