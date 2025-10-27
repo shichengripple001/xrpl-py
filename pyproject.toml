@@ -1,6 +1,6 @@
 [project]
-name = "xrpl-py"
-version = "4.3.0"
+name = "xrpl-py-cheng"
+version = "4.3.18b1"
 description = "A complete Python library for interacting with the XRP ledger"
 license = "ISC"
 readme = "README.md"
@@ -34,6 +34,8 @@ documentation = "https://xrpl-py.readthedocs.io"
 "Bug Tracker" = "https://github.com/XRPLF/xrpl-py/issues"
 
 [tool.poetry]
+name = "xrpl-py"
+description = "A complete Python library for interacting with the XRP ledger"
 packages = [{ include = "xrpl" }, { include = "LICENSE" }]
 
 [tool.poetry.dependencies]
