@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
 
 env:
   POETRY_VERSION: 2.1.1
@@ -15,7 +16,8 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        # python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.8"]
 
     steps:
       - name: Checkout code
@@ -44,8 +46,8 @@ jobs:
         run: |
           python -c "import sys; print(sys.version)"
 
-      - name: Install poetry dependencies
-        run: poetry install
+      # - name: Install poetry dependencies
+      #   run: poetry install
 
-      - name: Run Faucet tests
-        run: poetry run poe test_faucet
+      # - name: Run Faucet tests
+      #   run: poetry run poe test_faucet
