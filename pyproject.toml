@@ -1,6 +1,6 @@
 [project]
-name = "xrpl-py"
-version = "4.4.0"
+name = "xrpl-py-cheng"
+version = "4.6.1"
 description = "A complete Python library for interacting with the XRP ledger"
 license = "ISC"
 readme = "README.md"
@@ -29,7 +29,7 @@ requires-python = ">=3.8.1"
 dynamic = [ "dependencies" ]
 
 [project.urls]
-repository = "https://github.com/XRPLF/xrpl-py"
+repository = "https://github.com/shichengripple001/xrpl-py"
 documentation = "https://xrpl-py.readthedocs.io"
 "Bug Tracker" = "https://github.com/XRPLF/xrpl-py/issues"
 
