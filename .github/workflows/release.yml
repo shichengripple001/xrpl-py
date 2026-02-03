@@ -117,7 +117,6 @@ jobs:
     name: Run integration tests matrix (${{ needs.input-validate.outputs.package_version }})
     needs:
       - input-validate
-    continue-on-error: ${{ needs.input-validate.outputs.is_beta_release == 'true' }}
     uses: ./.github/workflows/integration_test.yml
     with:
       git_ref: ${{ github.event.inputs.release_branch }}
