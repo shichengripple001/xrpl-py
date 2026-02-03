@@ -700,16 +700,47 @@ jobs:
       - ask_for_sec_team_review
       - publish-to-pypi
       - github-release
-    if: ${{ contains(needs.*.result, 'failure') }}
+    if: >-
+      ${{ always() && (
+        needs.input-validate.result == 'failure' ||
+        (needs['faucet-tests'].result == 'failure' && needs.input-validate.outputs.is_beta_release != 'true') ||
+        (needs['integration-tests'].result == 'failure' && needs.input-validate.outputs.is_beta_release != 'true') ||
+        needs['unit-tests'].result == 'failure' ||
+        needs.pre-release.result == 'failure' ||
+        needs.ask_for_dev_team_review.result == 'failure' ||
+        needs.first_review.result == 'failure' ||
+        needs.ask_for_sec_team_review.result == 'failure' ||
+        needs['publish-to-pypi'].result == 'failure' ||
+        needs.github-release.result == 'failure'
+      ) }}
     env:
       SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
       PACKAGE_VERSION: ${{ needs.input-validate.outputs.package_version }}
       REPO: ${{ github.repository }}
       RUN_ID: ${{ github.run_id }}
+      IS_BETA: ${{ needs.input-validate.outputs.is_beta_release }}
+      NEEDS_JSON: ${{ toJson(needs) }}
     steps:
       - name: Notify Slack if release fails
         run: |
+          set -euo pipefail
+          FAILED_JOBS="$(printf '%s' "$NEEDS_JSON" | jq -r --arg is_beta "$IS_BETA" '
+            to_entries
+            | map(select(.value.result=="failure"))
+            | map(.key)
+            | map(
+                if .=="faucet-tests" or .=="integration-tests" then
+                  (if $is_beta=="true" then empty else . end)
+                else . end
+              )
+            | select(length>0)
+            | join(", ")
+          ')"
+
           MESSAGE="❌ Release failed for xrpl-py ${PACKAGE_VERSION}. Check the logs: https://github.com/${REPO}/actions/runs/${RUN_ID}"
+          if [ -n "$FAILED_JOBS" ]; then
+            MESSAGE="${MESSAGE} (failed: ${FAILED_JOBS})"
+          fi
           curl -X POST https://slack.com/api/chat.postMessage \
             -H "Authorization: Bearer $SLACK_TOKEN" \
             -H "Content-Type: application/json" \
