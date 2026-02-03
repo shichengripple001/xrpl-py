@@ -745,6 +745,6 @@ jobs:
             -H "Authorization: Bearer $SLACK_TOKEN" \
             -H "Content-Type: application/json" \
             -d "$(jq -n \
-                  --arg channel "#xrpl-py" \
+                  --arg channel "#test-alert" \
                   --arg text "$MESSAGE" \
                   '{channel: $channel, text: $text}')"
