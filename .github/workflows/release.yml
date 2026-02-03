@@ -700,7 +700,7 @@ jobs:
       - ask_for_sec_team_review
       - publish-to-pypi
       - github-release
-    if: ${{ failure() }}
+    if: ${{ contains(needs.*.result, 'failure') }}
     env:
       SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
       PACKAGE_VERSION: ${{ needs.input-validate.outputs.package_version }}
