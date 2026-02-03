@@ -118,19 +118,20 @@ jobs:
     name: Run integration tests matrix (${{ needs.input-validate.outputs.package_version }})
     needs:
       - input-validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Force success (stubbed)
-        run: exit 0
+    continue-on-error: ${{ needs.input-validate.outputs.is_beta_release == 'true' }}
+    uses: ./.github/workflows/integration_test.yml
+    with:
+      git_ref: ${{ github.event.inputs.release_branch }}
+    secrets: inherit
 
   unit-tests:
     name: Run unit tests matrix (${{ needs.input-validate.outputs.package_version }})
     needs:
       - input-validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Intentional failure for testing
-        run: exit 1
+    uses: ./.github/workflows/unit_test.yml
+    with:
+      git_ref: ${{ github.event.inputs.release_branch }}
+    secrets: inherit
 
   pre-release:
     name: Pre-release distribution 📦 (${{ needs.input-validate.outputs.package_version }})
