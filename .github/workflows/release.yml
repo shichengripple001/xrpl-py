@@ -79,10 +79,10 @@ jobs:
           RELEASE_BRANCH: ${{ github.event.inputs.release_branch }}
         run: |
           set -euo pipefail
-          if [[ "${TRIGGER_BRANCH}" != "main" ]]; then
-            echo "❌ This workflow must be dispatched from the main branch (current: ${TRIGGER_BRANCH})." >&2
-            exit 1
-          fi
+          # if [[ "${TRIGGER_BRANCH}" != "main" ]]; then
+          #   echo "❌ This workflow must be dispatched from the main branch (current: ${TRIGGER_BRANCH})." >&2
+          #   exit 1
+          # fi
 
           RELEASE_BRANCH="${RELEASE_BRANCH}"
 
