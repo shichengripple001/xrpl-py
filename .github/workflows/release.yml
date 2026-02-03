@@ -108,7 +108,6 @@ jobs:
     name: Run faucet tests matrix (${{ needs.input-validate.outputs.package_version }})
     needs:
       - input-validate
-    if: ${{ needs.input-validate.outputs.is_beta_release != 'true' }}
     uses: ./.github/workflows/faucet_test.yml
     with:
       git_ref: ${{ github.event.inputs.release_branch }}
