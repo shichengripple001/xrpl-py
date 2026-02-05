@@ -57,7 +57,7 @@ class ED25519(CryptoImplementation):
     @classmethod
     def sign(cls: Type[Self], message: bytes, private_key: str) -> bytes:
         """
-        Signs a message using a given Ed25519 private key.
+        Signs a message using a given Ed25519 private key. testxxxxx
 
         Args:
             message: The message to sign, as bytes.
