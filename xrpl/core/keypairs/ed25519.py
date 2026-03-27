@@ -28,7 +28,7 @@ class ED25519(CryptoImplementation):
     ) -> Tuple[str, str]:
         """
         Derives a key pair in Ed25519 format for use with the XRP Ledger from a
-        seed value.
+        seed value. changedaaaaa
 
         Args:
             decoded_seed: The Ed25519 seed to derive a key pair from, as bytes.
